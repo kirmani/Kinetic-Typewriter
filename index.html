@@ -1,0 +1,94 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<link href="style.css" rel="stylesheet" type="text/css" />
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script src="bigtext.js"></script>
+    
+    <!--Color Picker-->
+    <link rel="stylesheet" media="screen" type="text/css" href="css/colorpicker.css" />
+	<script type="text/javascript" src="js/colorpicker.js"></script>
+
+	<title>Kinetic Typewriter</title>
+</head>
+
+<script>
+
+</script>
+
+<body>
+	<div id="editor">
+        <div id="output"></div>
+        <form id="new-line-form">
+            <input type="text" id="new-line" placeholder="Type here!" autocomplete="off"/>
+            <div id="colorPicker"></div>
+            <h6>BOLD: Control + B</h6>
+    		<h6>ITALICS: Control + I</h6>
+        </form>
+	</div>
+</body>
+</html>
+
+<script>
+var color;
+var lineNumber = 0;
+$('#colorPicker').ColorPicker({
+	flat: true,
+	color: '#1c1c1c',
+	onShow: function (colpkr) {
+		$(colpkr).fadeIn(500);
+		return false;
+	},
+	onHide: function (colpkr) {
+		$(colpkr).fadeOut(500);
+		return false;
+	},
+	onChange: function (hsb, hex, rgb) {
+		$('#new-line').css('color', '#' + hex);
+		color = '#' + hex;
+	}
+});
+$("#new-line-form").keypress(function(event) {
+	if (event.which === 98 && (event.ctrlKey || event.metaKey)) { // Ctrl + b
+		$("#new-line").toggleClass("bold");
+    }
+	if (event.which === 105 && (event.ctrlKey || event.metaKey)) { // Ctrl + i
+		$("#new-line").toggleClass("italic");
+    }
+    if (event.which == 13) {
+        event.preventDefault();
+        var text = $('#new-line').val();
+		var boldText = '';
+		var italicsText = '';
+		if ( $("#new-line").hasClass("bold") ) {
+			boldText = 'bold '
+		} 
+		if ( $("#new-line").hasClass("italic") ) {
+			italicsText = 'italic '
+		} 
+		$("#output").append( "<span class='" + boldText + italicsText +"'>" + text + "</span>" );
+		var textColors = {};
+		for (i = 0; i < lineNumber; i++) {
+			textColors[i] = $(".bigtext-line" + i).css("color");
+		}
+		$('#output').bigtext();
+		for (i = 0; i < lineNumber; i++) {
+			$(".bigtext-line" + i).css("color",textColors[i]);
+		}
+		$(".bigtext-line" + lineNumber).css("color",color);
+		$('#new-line-form').after($(".line"));
+		$("#new-line").removeClass("bold");
+		$("#new-line").removeClass("italic");
+		$("#new-line").val('');
+		lineNumber++;
+    }
+});
+$(window).on('resize', function(){
+	for (i = 0; i < lineNumber; i++) {
+			$(".bigtext-line" + i).css("color",textColors[i]);
+	}
+	$(".bigtext-line" + lineNumber).css("color",color);
+});
+</script>
